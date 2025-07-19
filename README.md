@@ -1,6 +1,7 @@
 # Wallex Pump Bot 🚀
 
-Wallex registration, login, claim automation for pump challenge.
+Wallex registration, login, claim automation for pump challenge.\
+Referral: https://wallex.ir/pump?ref=avx0jtl
 
 ![GitHub stars](https://img.shields.io/github/stars/NabiKAZ/wallex-pump-bot?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/NabiKAZ/wallex-pump-bot?style=social)
