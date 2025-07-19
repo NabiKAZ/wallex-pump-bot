@@ -1,6 +1,4 @@
 /**
- * XPing - VLESS Connection Ping Tool
- * 
  * Wallex registration, login, claim automation for pump challenge
  * 
  * @repository https://github.com/NabiKAZ/wallex-pump-bot
