@@ -12,6 +12,9 @@ Wallex registration, login, claim automation for pump challenge.
 
 ## 📸 Screenshots
 
+### Wallex pump contest
+![Wallex pump contest](https://github.com/user-attachments/assets/0872e00e-582e-46fe-824e-4e219efb7702)
+
 ### Account Information Display
 ![Account Info](https://github.com/user-attachments/assets/13e564fb-619b-4cbb-a664-15bdf9a188ec)
 
