@@ -1,0 +1,16 @@
+{
+  "name": "wallex-pump-bot",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Wallex registration, login, claim automation for pump challenge.",
+  "main": "bot.mjs",
+  "scripts": {
+    "start": "node bot.mjs"
+  },
+  "dependencies": {
+    "axios": "^1.4.0",
+    "chalk": "^4.1.2",
+    "cli-table3": "^0.6.5",
+    "yargs": "^18.0.0"
+  }
+}
