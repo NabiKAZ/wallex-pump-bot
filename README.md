@@ -29,7 +29,7 @@ Wallex registration, login, claim automation for pump challenge.
 - 💾 **Token Management**: Automatic token saving and loading
 - 🎨 **Colorized Output**: Beautiful console output with colors and tables
 
-## � Quick Start
+## 🚀 Quick Start
 
 1. **Clone and install**:
 ```bash
@@ -52,7 +52,7 @@ node bot.mjs -a info
 node bot.mjs -a claim
 ```
 
-## �🛠️ Installation
+## 🛠️ Installation
 
 1. **Clone the repository**:
 ```bash
@@ -229,7 +229,7 @@ The bot includes comprehensive error handling for:
 
 This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
 
-## � Support the Project
+## 💖 Support the Project
 
 If you find this project helpful, please consider:
 
@@ -255,7 +255,7 @@ nabikaz.ton
 ### 🔄 Share
 Help others discover this project by sharing it with your friends and community!
 
-## �👨‍💻 Author
+## 👨‍💻 Author
 
 **NabiKAZ**
 - 🐦 Twitter: [@NabiKAZ](https://x.com/NabiKAZ)
