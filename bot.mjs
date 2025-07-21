@@ -388,8 +388,10 @@ async function getTickets(token, dateFilter = null) {
             // انتخاب منبع تیکت‌ها بر اساس وجود dateFilter
             let ticketsData = [];
             if (dateFilter) {
-                // اگر تاریخ داده شده، فقط old_tickets همان تاریخ را نمایش بده
-                ticketsData = (result.old_tickets || []).filter(ticket => ticket.date === dateFilter);
+                // اگر تاریخ داده شده، از هر دو منبع tickets و old_tickets جستجو کن
+                const currentTickets = (result.tickets || []).filter(ticket => ticket.date === dateFilter);
+                const oldTickets = (result.old_tickets || []).filter(ticket => ticket.date === dateFilter);
+                ticketsData = [...currentTickets, ...oldTickets];
             } else {
                 // در غیر این صورت فقط tickets را نمایش بده
                 ticketsData = result.tickets || [];
@@ -398,13 +400,13 @@ async function getTickets(token, dateFilter = null) {
             // بررسی تیکت‌های برنده از همه بخش‌ها (برای Winners column)
             const allTicketsData = [...(result.tickets || []), ...(result.old_tickets || [])];
             const winnerTickets = allTicketsData
-                .filter(ticket => ticket.winner)
-                .map(ticket => ({
-                    number: ticket.ticket_number,
-                    won: ticket.winner.won,
-                    type: ticket.type,
-                    date: ticket.date
-                }));
+            .filter(ticket => ticket.winner)
+            .map(ticket => ({
+                number: ticket.ticket_number,
+                won: ticket.winner.won,
+                type: ticket.type,
+                date: ticket.date
+            }));
 
             // همچنین بررسی winner_tickets اگر موجود باشد
             if (result.winner_tickets && Array.isArray(result.winner_tickets)) {
