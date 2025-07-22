@@ -22,12 +22,16 @@ Referral: https://wallex.ir/pump?ref=avx0jtl
 ### Ticket Claiming Process
 ![Ticket Claiming](https://github.com/user-attachments/assets/b12deb60-cd96-4a43-a022-ae26ebbbd0d6)
 
+### Winners Report Display
+![Winners Report](https://github.com/user-attachments/assets/60786d79-e73e-4e37-aa5e-957413d987fd)
+
 ## 📋 Features
 
 - 🔐 **Account Registration**: Automated signup with captcha handling
 - 🔑 **Login Management**: Secure token-based authentication
 - 📊 **Profile Information**: Display account details and statistics
 - 🎫 **Ticket Claiming**: Automated ticket claiming for pump challenges
+- 🏆 **Winners Report**: Comprehensive winners analysis with prize calculations
 - 📱 **Phone Filtering**: Filter operations by specific phone numbers
 - 🕒 **Date Filtering**: Filter tickets by specific dates
 - 💾 **Token Management**: Automatic token saving and loading
@@ -54,6 +58,9 @@ node bot.mjs -a info
 
 # Claim tickets
 node bot.mjs -a claim
+
+# View winners report
+node bot.mjs -a winners
 ```
 
 ## 🛠️ Installation
@@ -102,28 +109,36 @@ node bot.mjs -a info
 node bot.mjs -a claim
 ```
 
+#### View Winners Report
+```bash
+node bot.mjs -a winners
+```
+
 ### Advanced Options
 
 #### Filter by Phone Number
 ```bash
 node bot.mjs -a info -p 09123456789
+node bot.mjs -a winners -p 09123456789
 ```
 
 #### Filter by Date
 ```bash
 node bot.mjs -a claim -d 2025-01-19
+node bot.mjs -a winners -d 2025-01-19
 ```
 
 #### Combined Filters
 ```bash
 node bot.mjs -a info -p 09123456789 -d 2025-01-19
+node bot.mjs -a winners -p 09123456789 -d 2025-01-19
 ```
 
 ### Command Line Options
 
 | Option | Alias | Description | Required | Choices |
 |--------|-------|-------------|----------|---------|
-| `--action` | `-a` | Action to perform | ✅ | `signup`, `login`, `info`, `claim` |
+| `--action` | `-a` | Action to perform | ✅ | `signup`, `login`, `info`, `claim`, `winners` |
 | `--phone` | `-p` | Filter by phone number | ❌ | Any phone number |
 | `--date` | `-d` | Filter by date (YYYY-MM-DD) | ❌ | Date in YYYY-MM-DD format |
 | `--help` | `-h` | Show help | ❌ | - |
@@ -198,7 +213,40 @@ Output example:
 node bot.mjs -a claim -p 09123456789
 ```
 
-### 4. Check Old Tickets
+### 4. View Winners Report
+```bash
+node bot.mjs -a winners
+```
+Output example:
+```
+🏆 Winners Report - All Days 🏆
+
+📅 Winners by Date:
+┌─────────────┬──────────────┬─────────────┬────────────┬──────┬─────────┬─────────────┐
+│ Date        │ Phone        │ Invite Code │ Ticket #   │ Type │ Prize   │ Amount      │
+├─────────────┼──────────────┼─────────────┼────────────┼──────┼─────────┼─────────────┤
+│ 2025-07-21  │ 09123456789  │ abc123      │ 12345678   │ pump │ 3       │ 7,292       │
+│             │ 09987654321  │ def456      │ 87654321   │ first│ 4       │ 119,211     │
+└─────────────┴──────────────┴─────────────┴────────────┴──────┴─────────┴─────────────┘
+
+📱 Winners by Phone Number:
+┌──────────────┬─────────────┬──────────────┬───────────────┬─────────┬──────────────┐
+│ Phone        │ Invite Code │ Total Tickets│ Winners Count │ Prize   │ Total Amount │
+├──────────────┼─────────────┼──────────────┼───────────────┼─────────┼──────────────┤
+│ 09123456789  │ abc123      │ 25           │ 2             │ 3+4     │ 126,503      │
+│ 09987654321  │ def456      │ 18           │ 1             │ 3       │ 7,292        │
+│ 09555111222  │ ghi789      │ 12           │ 0             │ N/A     │ N/A          │
+└──────────────┴─────────────┴──────────────┴───────────────┴─────────┴──────────────┘
+
+📊 Overall Statistics:
+Total Accounts: 3
+Total Winning Accounts: 2
+Total Tickets: 55
+Total Winning Tickets: 3
+Total Prize Amount: 133,795 Toman
+```
+
+### 5. Check Old Tickets
 ```bash
 node bot.mjs -a info -d 2025-01-18
 ```
@@ -210,6 +258,7 @@ node bot.mjs -a info -d 2025-01-18
 - **Rate Limiting**: Built-in delays to prevent API abuse
 - **Error Handling**: Comprehensive error handling with retry logic
 - **Debug Mode**: Optional debug output for troubleshooting
+- **Prize Data Security**: Hardcoded prize pools to prevent manipulation
 
 ## 🎨 Output Features
 
@@ -217,6 +266,8 @@ node bot.mjs -a info -d 2025-01-18
 - **Table Display**: Organized data display using cli-table3
 - **Progress Indicators**: Clear status messages with timestamps
 - **Error Messages**: Informative error messages with suggestions
+- **Winners Analysis**: Comprehensive winners report with prize calculations
+- **Statistical Overview**: Detailed statistics and summaries
 
 ## 🛡️ Error Handling
 
@@ -305,6 +356,13 @@ export default {
 - **yargs**: Command line argument parsing
 
 ## 🔄 Changelog
+
+### v2.0.0
+- **New Feature**: Winners report with comprehensive analysis
+- **Prize System**: Accurate prize calculations based on real data
+- **Enhanced Tables**: Improved data display with color coding
+- **Statistics**: Detailed overall statistics and summaries
+- **Historical Data**: Support for all campaign days (2025-07-14 to 2025-07-21)
 
 ### v1.0.0
 - Initial release

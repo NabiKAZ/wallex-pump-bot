@@ -24,6 +24,88 @@ import chalk from 'chalk';
 import accounts from './accounts.mjs';
 import config from './config.mjs';
 
+// Prize data by date and digit match
+const prizeData = {
+    '2025-07-14': [
+        { digits: 3, winners: 5906, totalPrize: 100000000 },
+        { digits: 4, winners: 623, totalPrize: 200000000 },
+        { digits: 5, winners: 46, totalPrize: 200000000 },
+        { digits: 6, winners: 3, totalPrize: 200000000 },
+        { digits: 7, winners: 0, totalPrize: 200000000 },
+        { digits: 8, winners: 0, totalPrize: 1000000000 }
+    ],
+    '2025-07-15': [
+        { digits: 3, winners: 8463, totalPrize: 100000000 },
+        { digits: 4, winners: 1238, totalPrize: 200000000 },
+        { digits: 5, winners: 111, totalPrize: 200000000 },
+        { digits: 6, winners: 5, totalPrize: 200000000 },
+        { digits: 7, winners: 0, totalPrize: 200000000 },
+        { digits: 8, winners: 0, totalPrize: 1000000000 }
+    ],
+    '2025-07-16': [
+        { digits: 3, winners: 13863, totalPrize: 100000000 },
+        { digits: 4, winners: 2114, totalPrize: 200000000 },
+        { digits: 5, winners: 240, totalPrize: 200000000 },
+        { digits: 6, winners: 12, totalPrize: 200000000 },
+        { digits: 7, winners: 0, totalPrize: 200000000 },
+        { digits: 8, winners: 0, totalPrize: 1000000000 }
+    ],
+    '2025-07-17': [
+        { digits: 3, winners: 12979, totalPrize: 100000000 },
+        { digits: 4, winners: 1750, totalPrize: 200000000 },
+        { digits: 5, winners: 166, totalPrize: 200000000 },
+        { digits: 6, winners: 8, totalPrize: 200000000 },
+        { digits: 7, winners: 0, totalPrize: 200000000 },
+        { digits: 8, winners: 0, totalPrize: 1000000000 }
+    ],
+    '2025-07-18': [
+        { digits: 3, winners: 20733, totalPrize: 100000000 },
+        { digits: 4, winners: 3553, totalPrize: 200000000 },
+        { digits: 5, winners: 239, totalPrize: 200000000 },
+        { digits: 6, winners: 7, totalPrize: 200000000 },
+        { digits: 7, winners: 1, totalPrize: 200000000 },
+        { digits: 8, winners: 0, totalPrize: 1000000000 }
+    ],
+    '2025-07-19': [
+        { digits: 3, winners: 17063, totalPrize: 100000000 },
+        { digits: 4, winners: 1898, totalPrize: 200000000 },
+        { digits: 5, winners: 161, totalPrize: 200000000 },
+        { digits: 6, winners: 4, totalPrize: 200000000 },
+        { digits: 7, winners: 0, totalPrize: 200000000 },
+        { digits: 8, winners: 0, totalPrize: 1000000000 }
+    ],
+    '2025-07-20': [
+        { digits: 3, winners: 15340, totalPrize: 100000000 },
+        { digits: 4, winners: 1992, totalPrize: 200000000 },
+        { digits: 5, winners: 161, totalPrize: 200000000 },
+        { digits: 6, winners: 8, totalPrize: 200000000 },
+        { digits: 7, winners: 1, totalPrize: 200000000 },
+        { digits: 8, winners: 0, totalPrize: 1000000000 }
+    ],
+    '2025-07-21': [
+        { digits: 3, winners: 13709, totalPrize: 100000000 },
+        { digits: 4, winners: 1679, totalPrize: 200000000 },
+        { digits: 5, winners: 140, totalPrize: 200000000 },
+        { digits: 6, winners: 3, totalPrize: 200000000 },
+        { digits: 7, winners: 1, totalPrize: 200000000 },
+        { digits: 8, winners: 0, totalPrize: 1000000000 }
+    ]
+};
+
+// Function to calculate individual prize amount for a winner
+function calculatePrizeAmount(prizeValue, date) {
+    // If prize value is a number (like "3", "4", etc.), calculate based on prize data
+    const digits = parseInt(prizeValue);
+    if (!isNaN(digits) && prizeData[date]) {
+        const prizeInfo = prizeData[date].find(p => p.digits === digits);
+        if (prizeInfo && prizeInfo.winners > 0) {
+            return Math.floor(prizeInfo.totalPrize / prizeInfo.winners);
+        }
+    }
+    // Return 0 if no data found or can't calculate
+    return 0;
+}
+
 // Parse command line arguments
 const argv = yargs(hideBin(process.argv))
     .usage('\nWallex registration, login, claim automation for pump challenge')
@@ -33,10 +115,10 @@ const argv = yargs(hideBin(process.argv))
     .usage('Usage: node $0 -a <action> [-d <date>] [-p <phone>]')
     .option('a', {
         alias: 'action',
-        describe: 'Action to perform: signup, login, info, or claim',
+        describe: 'Action to perform: signup, login, info, claim, or winners',
         type: 'string',
         demandOption: true,
-        choices: ['signup', 'login', 'info', 'claim']
+        choices: ['signup', 'login', 'info', 'claim', 'winners']
     })
     .option('d', {
         alias: 'date',
@@ -393,8 +475,8 @@ async function getTickets(token, dateFilter = null) {
                 const oldTickets = (result.old_tickets || []).filter(ticket => ticket.date === dateFilter);
                 ticketsData = [...currentTickets, ...oldTickets];
             } else {
-                // در غیر این صورت فقط tickets را نمایش بده
-                ticketsData = result.tickets || [];
+                // در غیر این صورت همه تیکت‌ها را از هر دو منبع برگردان
+                ticketsData = [...(result.tickets || []), ...(result.old_tickets || [])];
             }
 
             // بررسی تیکت‌های برنده از همه بخش‌ها (برای Winners column)
@@ -902,6 +984,216 @@ async function claimTicket(token, type, ticketNumber) {
     }
 }
 
+// Function to display all winners report
+async function displayWinnersReport() {
+    // فیلتر کردن اکانت‌ها بر اساس شماره تلفن
+    let filteredAccounts = accounts;
+    if (argv.phone) {
+        filteredAccounts = accounts.filter(account => account.phone === argv.phone);
+        if (filteredAccounts.length === 0) {
+            console.log(`${chalk.red('No account found with phone number:')} ${argv.phone}`);
+            return;
+        }
+        console.log(`${chalk.cyan('Winners report for phone:')} ${argv.phone}`);
+    }
+
+    console.log(`${chalk.cyan('🏆 Winners Report - All Days 🏆')}\n`);
+
+    // جمع‌آوری همه برنده‌ها از همه اکانت‌ها
+    let allWinners = [];
+    let totalWinAmount = 0;
+    let winnersByDate = {};
+    let winnersByType = {};
+    let winnersByPhone = {};
+    let accountProfiles = {}; // ذخیره profile همه اکانت‌ها
+    let accountTickets = {}; // ذخیره تیکت‌های همه اکانت‌ها
+
+    for (const account of filteredAccounts) {
+        console.log(`Checking winners for ${account.phone}...`);
+        const token = await loadToken(account.phone);
+        if (!token) {
+            console.log(`  No valid token for ${account.phone}, skipping...`);
+            // حداقل شماره تلفن رو ذخیره می‌کنیم
+            accountProfiles[account.phone] = { invite_code: 'N/A' };
+            accountTickets[account.phone] = { tickets: [] }; // تیکت خالی
+            continue;
+        }
+
+        const profile = await getProfile(token);
+        if (!profile) {
+            console.log(`  Failed to get profile for ${account.phone}, skipping...`);
+            accountProfiles[account.phone] = { invite_code: 'N/A' };
+            accountTickets[account.phone] = { tickets: [] }; // تیکت خالی
+            continue;
+        }
+
+        // ذخیره profile این اکانت
+        accountProfiles[account.phone] = profile;
+
+        // دریافت همه تیکت‌ها (بدون فیلتر تاریخ)
+        const tickets = await getTickets(token);
+        if (!tickets) {
+            console.log(`  Failed to get tickets for ${account.phone}, skipping...`);
+            accountTickets[account.phone] = { tickets: [] }; // تیکت خالی
+            continue;
+        }
+
+        // ذخیره تیکت‌های این اکانت (حالا شامل همه تیکت‌های current و old می‌شود)
+        accountTickets[account.phone] = tickets;
+
+        if (!tickets.winnerTickets || tickets.winnerTickets.length === 0) {
+            console.log(`  No winners found for ${account.phone}`);
+            continue;
+        }
+
+        console.log(`  Found ${tickets.winnerTickets.length} winner ticket(s) for ${account.phone}`);
+
+        // پردازش تیکت‌های برنده
+        tickets.winnerTickets.forEach(winner => {
+            const winnerData = {
+                phone: account.phone,
+                inviteCode: profile.invite_code || 'N/A',
+                ticketNumber: winner.number,
+                type: winner.type,
+                date: winner.date,
+                prize: winner.won,
+                timestamp: new Date().toISOString()
+            };
+
+            allWinners.push(winnerData);
+
+            // محاسبه مجموع جوایز (اگر عددی باشد)
+            const prizeAmount = parseFloat(winner.won);
+            if (!isNaN(prizeAmount)) {
+                totalWinAmount += prizeAmount;
+            }
+
+            // گروه‌بندی بر اساس تاریخ
+            if (!winnersByDate[winner.date]) {
+                winnersByDate[winner.date] = [];
+            }
+            winnersByDate[winner.date].push(winnerData);
+
+            // گروه‌بندی بر اساس نوع
+            if (!winnersByType[winner.type]) {
+                winnersByType[winner.type] = [];
+            }
+            winnersByType[winner.type].push(winnerData);
+
+            // گروه‌بندی بر اساس شماره تلفن
+            if (!winnersByPhone[account.phone]) {
+                winnersByPhone[account.phone] = [];
+            }
+            winnersByPhone[account.phone].push(winnerData);
+        });
+    }
+
+    if (allWinners.length === 0) {
+        console.log(`\n${chalk.yellow('No winners found in any account!')}`);
+        return;
+    }
+
+    // جدول برنده‌ها بر اساس تاریخ
+    console.log(`${chalk.green('📅 Winners by Date:')}`);
+    const dateTable = new Table({
+        head: ['Date', 'Phone', 'Invite Code', 'Ticket #', 'Type', 'Prize', 'Amount'],
+        style: {
+            head: ['cyan'],
+            border: ['grey']
+        }
+    });
+
+    // مرتب سازی بر اساس تاریخ (جدیدترین اول)
+    const sortedDates = Object.keys(winnersByDate).sort((a, b) => new Date(b) - new Date(a));
+    
+    sortedDates.forEach(date => {
+        winnersByDate[date].forEach((winner, index) => {
+            const prizeAmount = calculatePrizeAmount(winner.prize, winner.date);
+            const formattedAmount = prizeAmount > 0 ? prizeAmount.toLocaleString() : 'N/A';
+            
+            dateTable.push([
+                index === 0 ? chalk.yellow(date) : '', // فقط اولین ردیف تاریخ رو نشون بده
+                winner.phone,
+                winner.inviteCode,
+                winner.ticketNumber,
+                winner.type,
+                chalk.green(winner.prize),
+                chalk.cyan(formattedAmount)
+            ]);
+        });
+    });
+
+    console.log(dateTable.toString());
+
+    // آمار بر اساس شماره تلفن (شامل همه اکانت‌ها)
+    console.log(`\n${chalk.green('📱 Winners by Phone Number:')}`);
+    
+    // ایجاد آمار برای همه اکانت‌ها (برنده و غیر برنده)
+    const phoneStats = filteredAccounts.map(account => {
+        const winners = winnersByPhone[account.phone] || [];
+        const count = winners.length;
+        const prizeDetail = count > 0 ? winners.map(w => w.prize).join('+') : 'N/A';
+        const totalAmount = winners.reduce((sum, w) => {
+            const amount = calculatePrizeAmount(w.prize, w.date);
+            return sum + amount;
+        }, 0);
+        // تعداد کل تیکت‌ها (برنده و غیر برنده)
+        const totalTickets = accountTickets[account.phone]?.tickets?.length || 0;
+        // استفاده از profile ذخیره شده
+        const inviteCode = accountProfiles[account.phone]?.invite_code || 'N/A';
+        return { phone: account.phone, inviteCode, totalTickets, count, prizeDetail, totalAmount };
+    }).sort((a, b) => b.count - a.count);
+
+    const phoneTable = new Table({
+        head: ['Phone', 'Invite Code', 'Total Tickets', 'Winners Count', 'Prize', 'Total Amount'],
+        style: {
+            head: ['cyan'],
+            border: ['grey']
+        }
+    });
+
+    phoneStats.forEach(stat => {
+        const formattedAmount = stat.totalAmount > 0 ? stat.totalAmount.toLocaleString() : 'N/A';
+        const countColor = stat.count > 0 ? chalk.cyan(stat.count) : chalk.gray(stat.count);
+        const prizeColor = stat.prizeDetail !== 'N/A' ? chalk.green(stat.prizeDetail) : chalk.gray(stat.prizeDetail);
+        const amountColor = stat.totalAmount > 0 ? chalk.cyan(formattedAmount) : chalk.gray(formattedAmount);
+        const ticketsColor = stat.totalTickets > 0 ? chalk.yellow(stat.totalTickets) : chalk.gray(stat.totalTickets);
+        
+        phoneTable.push([
+            stat.phone,
+            stat.inviteCode,
+            ticketsColor,
+            countColor,
+            prizeColor,
+            amountColor
+        ]);
+    });
+
+    console.log(phoneTable.toString());
+
+    // نمایش آمار کلی در پایان
+    console.log(`\n${chalk.green('📊 Overall Statistics:')}`);
+    
+    // آمار اکانت‌ها
+    console.log(`Total Accounts: ${chalk.cyan(filteredAccounts.length)}`);
+    console.log(`Total Winning Accounts: ${chalk.cyan(Object.keys(winnersByPhone).length)}`);
+    
+    // آمار تیکت‌ها
+    const totalAllTickets = Object.values(accountTickets).reduce((sum, tickets) => {
+        return sum + (tickets?.tickets?.length || 0);
+    }, 0);
+    console.log(`Total Tickets: ${chalk.cyan(totalAllTickets)}`);
+    console.log(`Total Winning Tickets: ${chalk.cyan(allWinners.length)}`);
+    
+    // آمار جوایز
+    const totalPrizeAmount = allWinners.reduce((sum, winner) => {
+        const amount = calculatePrizeAmount(winner.prize, winner.date);
+        return sum + amount;
+    }, 0);
+    console.log(`Total Prize Amount: ${chalk.cyan(totalPrizeAmount.toLocaleString())} Toman\n`);
+
+}
+
 // Function to process tickets claiming
 async function processTicketsClaiming() {
     // فیلتر کردن اکانت‌ها بر اساس شماره تلفن
@@ -1012,6 +1304,10 @@ async function main() {
 
             case 'claim':
                 await processTicketsClaiming();
+                break;
+
+            case 'winners':
+                await displayWinnersReport();
                 break;
         }
     } catch (error) {
